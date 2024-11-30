@@ -9,8 +9,11 @@ export default function Page() {
   const [messages, setMessages] = useState<CoreMessage[]>([]);
 
   return (
-    <div>
+    <div className="bg-slate-5 px-5 mr-5">
+      <label className=" mr-5">tema</label>
       <input
+        className="p-3"
+        id="inputTema"
         value={input}
         onChange={event => {
           setInput(event.target.value);
@@ -18,22 +21,22 @@ export default function Page() {
         onKeyDown={async event => {
           if (event.key === 'Enter') {
             setMessages(currentMessages => [
-              ...currentMessages,
+              
               { role: 'user', content: input },
             ]);
 
-            const response = await fetch('/api/chat', {
+            const response = await fetch('/api/chatGoogle', {
               method: 'POST',
               body: JSON.stringify({
-                messages: [...messages, { role: 'user', content: input }],
+                messages: [ { role: 'user', content: input }],
               }),
             });
 
             const { messages: newMessages } = await response.json();
-
+            console.log(newMessages)
             setMessages(currentMessages => [
               ...currentMessages,
-              ...newMessages,
+              ...newMessages.response.messages,
             ]);
           }
         }}
@@ -46,7 +49,7 @@ export default function Page() {
             : message.content
                 .filter(part => part.type === 'text')
                 .map((part, partIndex) => (
-                  <div key={partIndex}>{part.text}</div>
+                  <pre key={partIndex}>{part.text}</pre>
                 ))}
         </div>
       ))}
